@@ -10,3 +10,4 @@ Open `index.html` (or use VS Code Live Server).
 - `js/app.js` - page layout, navigation, start
 
 Admin login: admin / 1234. Test passenger: passenger / 1234.
+Updated.
