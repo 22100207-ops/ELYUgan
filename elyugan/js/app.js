@@ -1,9 +1,13 @@
-/* APP - screen layout, navigation and start */
-
-function render(){if(U.mode=='user'&&!me())U.mode=null;if(!U.mode){$('app').innerHTML=loginV();return}
-const a=U.mode=='admin';if(!a&&!U.name)U.name=me().name;
-$('app').innerHTML=`<header><div><div class="logo">ELY<b>U</b>gan</div><small>${a?'Admin panel':'Hi, '+esc(me().name.split(' ')[0])}</small></div><button class="seg-out" onclick="logout()">Log out</button></header><main>${a?adminV():userV()}</main>${nav(a)}`}
-
-function nav(a){const t=a?(U.admin?[['queue','🚏','Queue'],['buses','🚌','Buses'],['drivers','🧑‍✈️','Drivers'],['tix','🎫','Tickets'],['set','⚙️','Settings']]:[]):[['book','🎟️','Book'],['mine','📋','My Tickets']];const k=a?'at':'tab';return'<nav>'+t.map(x=>`<button class="${U[k]==x[0]?'on':''}" onclick="U.${k}='${x[0]}';render()"><span>${x[1]}</span>${x[2]}</button>`).join('')+'</nav>'}
-
+// Dialogs, navigation and the main render function (loads last)
+function ask(msg,yes){const d=document.createElement('div');d.className='okv';d.innerHTML='<div class="okc" style="width:290px"><b style="margin:0 0 18px">'+esc(msg)+'</b><div class="row"><button class="btn ghost" id="qn">No</button><button class="btn" id="qy">Yes</button></div></div>';document.body.appendChild(d);$('qn').onclick=()=>d.remove();$('qy').onclick=()=>{d.remove();yes()}}
+window.alert=function(x){const d=document.createElement('div');d.className='okv';d.innerHTML='<div class="okc" style="width:290px"><b style="margin:0 0 18px">'+esc(x)+'</b><button class="btn" id="qo">OK</button></div>';document.body.appendChild(d);$('qo').onclick=()=>d.remove()};
+function flash(x){const d=document.createElement('div');d.className='okv';d.innerHTML='<div class="okc"><svg viewBox="0 0 52 52"><circle cx="26" cy="26" r="24"/><path d="M14 27l8 8 16-17"/></svg><b>'+x+'</b></div>';document.body.appendChild(d);setTimeout(()=>{d.remove();render()},1500)}
+function render(){if(U.mode=='user'&&!me())U.mode=null;if(U.mode=='cond'&&!cond())U.mode=null;if(!U.mode&&S.sessC&&cond()){U.mode='cond';U.ct=U.ct||'tix'}
+if(!U.mode){$('app').innerHTML=loginV();return}
+const a=U.mode=='admin',c=U.mode=='cond';if(!a&&!c&&!U.name)U.name=me().name;
+$('app').innerHTML=`<header><div><div class="logo">ELY<b>U</b>gan</div><small>${a?'Admin panel':c?'Conductor · '+esc(cond().name):'Hi, '+esc(me().name.split(' ')[0])}</small></div><button class="seg-out" onclick="logout()">Log out</button></header><main>${a?adminV():c?condV():userV()}</main>${nav(a)}`}
+const IC={'🎟️':'<path d="M3 9a2 2 0 0 0 0 6v3h18v-3a2 2 0 0 1 0-6V6H3z"/><path d="M14 6v12" stroke-dasharray="2 2"/>','🎫':'<path d="M3 9a2 2 0 0 0 0 6v3h18v-3a2 2 0 0 1 0-6V6H3z"/><path d="M14 6v12" stroke-dasharray="2 2"/>','📋':'<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4h6v3H9zM9 12h6M9 16h6"/>','💺':'<path d="M7 3h6a2 2 0 0 1 2 2v7H7z"/><path d="M5 12h14v4a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2z"/><path d="M8 18v3M16 18v3"/>','➕':'<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0M19 8v6M16 11h6"/>','🚏':'<path d="M5 21V4M5 4h12l-2 4 2 4H5"/>','🚌':'<rect x="3" y="4" width="18" height="13" rx="2"/><path d="M3 11h18M7 17v3M17 17v3"/><circle cx="7.5" cy="14" r=".8"/><circle cx="16.5" cy="14" r=".8"/>','👥':'<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0M16 4.5a3.5 3.5 0 0 1 0 7M18.5 14.5A6.5 6.5 0 0 1 21.5 20"/>','📜':'<path d="M3 12h4l3-8 4 16 3-8h4"/>','⚙️':'<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9L7 7M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1"/>'};
+function ico(e){return'<svg viewBox="0 0 24 24">'+(IC[e]||'')+'</svg>'}
+function nav(){return navRaw().replace(/<span>([^<]*)<\/span>/g,(a,e)=>'<span>'+ico(e)+'</span>')}
+function navRaw(){const k=U.mode=='admin'?'at':U.mode=='cond'?'ct':'tab',t=U.mode=='admin'?[['queue','🚏','Queue'],['buses','🚌','Buses'],['drivers','👥','People'],['tix','🎫','Tickets'],['log','📜','Activity'],['set','⚙️','Settings']]:U.mode=='cond'?[['tix','💺','Seats'],['list','🎫','Tickets']]:[['book','🎟️','Book'],['mine','📋','My Tickets']];return'<nav>'+t.map(x=>`<button class="${U[k]==x[0]?'on':''}" onclick="U.${k}='${x[0]}';render()"><span>${x[1]}</span>${x[2]}</button>`).join('')+'</nav>'}
 render();
