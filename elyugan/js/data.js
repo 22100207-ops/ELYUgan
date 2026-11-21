@@ -13,6 +13,7 @@ const taken=id=>S.tickets.filter(t=>t.bus==id&&t.st=='active').map(t=>t.seat);
 const km=n=>(S.stops.find(s=>s.n==n)||{km:0}).km;
 function fare(f,t,ty){if(!f||!t||f==t)return null;const d=Math.abs(km(f)-km(t)),c=S.cfg;let base=Math.max(c.min,(c.base||0)+d*c.rate);base=Math.round(base*100)/100;const tot=ty!='Regular'?Math.round(base*(100-c.disc)/25)/4:base;return{d,base,off:base-tot,tot}}
 function me(){return S.users.find(u=>u.id==S.sess)}
+function cond(){return S.cons.find(c=>c.id==S.sessC)}
 function logA(r,w,x){S.log.unshift({t:new Date().toLocaleString(),r,w,x});if(S.log.length>200)S.log.length=200}
 function tf(t){if(!t)return'—';const[h,mi]=t.split(':');return((h%12)||12)+':'+mi+(h<12?' AM':' PM')}
-function cond(){return S.cons.find(c=>c.id==S.sessC)}
+function sl(n){return String.fromCharCode(65+Math.floor((n-1)/4))+((n-1)%4+1)}
